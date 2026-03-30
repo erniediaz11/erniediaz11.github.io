@@ -7,18 +7,42 @@
   <link rel="stylesheet" href="https://unpkg.com/98.css">
   <style>
     body {
-      background-color: #008080; /* Classic Windows 98 Teal */
-      padding: 20px;
+      /* Classic Windows 98 Teal mixed with a subtle 90s wallpaper pattern */
+      background-color: #008080; 
+      background-image: 
+        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.1)),
+        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.1));
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      padding: 40px;
       font-family: Arial, sans-serif;
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      height: 90vh;
+      gap: 30px;
+      min-height: 100vh;
       margin: 0;
     }
+
     .window {
-      width: 450px;
+      width: 350px;
       box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+      align-self: flex-start; /* Keeps windows from stretching vertically */
+    }
+
+    .photo-stage {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #808080 #ffffff #ffffff #808080;
+      padding: 10px;
+      text-align: center;
+      margin-top: 10px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-style: italic;
     }
   </style>
 </head>
@@ -26,39 +50,93 @@
 
   <div class="window">
     <div class="title-bar">
-      <div class="title-bar-text">resume.exe</div>
+      <div class="title-bar-text">about_me.txt</div>
       <div class="title-bar-controls">
         <button aria-label="Minimize"></button>
         <button aria-label="Maximize"></button>
         <button aria-label="Close"></button>
       </div>
     </div>
-    
     <div class="window-body">
       <h3 style="margin-top: 0;">Ernesto Diaz</h3>
       <p>Consultant | 3D Design | Data Analytics</p>
-      
+      <p>Welcome to my digital space. I am a professional who blends analytical public policy experience with creative technical skills to solve complex problems.</p>
+      <div style="text-align: right; margin-top: 15px;">
+        <button>Contact Me</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="window" style="width: 450px;">
+    <div class="title-bar">
+      <div class="title-bar-text">professional.exe</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close"></button>
+      </div>
+    </div>
+    <div class="window-body">
       <fieldset>
         <legend>Experience</legend>
-        <p><strong>Grants Analyst</strong> - SBCAG</p>
-        <p><strong>Contract & Grants Analyst</strong> - UCSB</p>
-        <p><strong>Admin Office Professional</strong> - County of Santa Barbara</p>
-      </fieldset>
-
-      <fieldset style="margin-top: 10px;">
-        <legend>Skills & Certifications</legend>
-        <ul>
-          <li>Google Data Analytics Certified</li>
-          <li>Google Project Management Certified</li>
-          <li>Python & Machine Learning</li>
-          <li>3D CAD (SketchUp, Blender)</li>
+        <ul class="tree-view">
+          <li>Grants Analyst - SBCAG</li>
+          <li>Contract and Grants Analyst - UCSB Computer Science</li>
+          <li>Administrative Office Professional Senior - COSB-DSS</li>
+          <li>Administrative Office Professional II - COSB-Public Health</li>
         </ul>
       </fieldset>
 
-      <div style="text-align: right; margin-top: 15px;">
-        <button>View CAD Models</button>
-        <button>Contact</button>
+      <fieldset style="margin-top: 10px;">
+        <legend>Skills from Work</legend>
+        <ul>
+          <li>Google Data Analytics Certified</li>
+          <li>Google Project Management Certified</li>
+          <li>Public Policy & Ethics Analysis</li>
+        </ul>
+      </fieldset>
+
+      <fieldset style="margin-top: 10px;">
+        <legend>Self-Taught & External Skills</legend>
+        <ul>
+          <li>Python & Machine Learning (LLM predictions)</li>
+          <li>3D CAD (SketchUp, Blender)</li>
+        </ul>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">hobbies.dir</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close"></button>
       </div>
+    </div>
+    <div class="window-body">
+      <p>Outside of work, I spend my time cultivating plants and making music.</p>
+      
+      <fieldset>
+        <legend>Plant Gallery</legend>
+        <div class="photo-stage">
+          [ Insert Image of Staged Pothos Here ]
+        </div>
+      </fieldset>
+
+      <fieldset style="margin-top: 10px;">
+        <legend>Audio Files</legend>
+        <ul class="tree-view">
+          <li>music/
+            <ul>
+              <li><a href="#">lofi_nujabes_vibe.mp3</a></li>
+              <li><a href="#">cuban_groove.wav</a></li>
+              <li><a href="#">80s_latin_pop_demo.mp3</a></li>
+            </ul>
+          </li>
+        </ul>
+      </fieldset>
     </div>
   </div>
 
