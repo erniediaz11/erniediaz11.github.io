@@ -1,493 +1,1260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ernesto Diaz</title>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ernesto Diaz | Portfolio Desktop</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --glass: rgba(236, 248, 255, 0.74);
+      --glass-strong: rgba(245, 252, 255, 0.9);
+      --glass-border: rgba(255, 255, 255, 0.8);
+      --dark-blue: #082f6f;
+      --mid-blue: #1677c8;
+      --light-blue: #bfe8ff;
+      --taskbar: rgba(6, 28, 65, 0.82);
+      --text: #152033;
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+    }
 
     body {
-      background: #1a1a1a;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.55), transparent 13%),
+        radial-gradient(circle at 72% 28%, rgba(108, 217, 255, 0.5), transparent 18%),
+        radial-gradient(circle at 40% 75%, rgba(58, 155, 255, 0.4), transparent 23%),
+        linear-gradient(135deg, #05245c 0%, #0b62b5 35%, #16a8e8 58%, #053c8a 100%);
+    }
+
+    a {
+      color: #075ea8;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wallpaper-flare {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(115deg, transparent 0 38%, rgba(255,255,255,.18) 39%, transparent 48%),
+        linear-gradient(25deg, transparent 0 56%, rgba(255,255,255,.08) 57%, transparent 64%);
+      opacity: 0.8;
+    }
+
+    .desktop {
+      position: fixed;
+      inset: 0 0 48px 0;
+      padding: 26px 18px;
+      display: grid;
+      grid-template-columns: repeat(2, 96px);
+      grid-auto-rows: 92px;
+      gap: 12px 18px;
+      align-content: start;
+      z-index: 1;
+    }
+
+    .desktop-icon {
+      width: 92px;
+      height: 88px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 4px;
+      border-radius: 4px;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0,0,0,.85);
+      cursor: default;
+    }
+
+    .desktop-icon:hover,
+    .desktop-icon.selected {
+      background: rgba(180, 220, 255, 0.25);
+      outline: 1px solid rgba(255,255,255,.35);
+    }
+
+    .icon-art {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
+      font-size: 28px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.9), rgba(196,224,255,.68));
+      box-shadow: 0 8px 18px rgba(0,0,0,.25), inset 0 1px rgba(255,255,255,.95);
+      margin-bottom: 7px;
     }
 
-    .rm-wrap {
+    .icon-label {
       width: 100%;
-      max-width: 960px;
+      font-size: 12px;
+      line-height: 1.15;
+      text-align: center;
+      word-break: normal;
+      padding: 1px 3px;
     }
 
-    .rm {
-      width: 100%;
-      position: relative;
-      padding-bottom: 58%;
+    .window {
+      position: absolute;
+      width: min(720px, calc(100vw - 36px));
+      min-height: 390px;
+      max-height: calc(100vh - 86px);
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
       overflow: hidden;
+      display: none;
+      z-index: 20;
+    }
+
+    .window.active {
+      display: block;
+    }
+
+    .window.maximized {
+      width: calc(100vw - 12px) !important;
+      height: calc(100vh - 60px) !important;
+      max-height: none;
+      left: 6px !important;
+      top: 6px !important;
+      border-radius: 7px;
+    }
+
+    .titlebar {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 12px;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,.85), rgba(172,218,255,.43) 48%, rgba(72,144,210,.35));
+      border-bottom: 1px solid rgba(255,255,255,.65);
+      cursor: move;
+    }
+
+    .window-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #102f56;
+      text-shadow: 0 1px rgba(255,255,255,.9);
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .window-controls {
+      display: flex;
+      height: 100%;
+      align-items: flex-start;
+      padding-right: 6px;
+    }
+
+    .control {
+      width: 42px;
+      height: 23px;
+      border: 1px solid rgba(65,85,110,.55);
+      border-top: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,.85), rgba(190,218,245,.55));
+      color: #123;
+      font-size: 13px;
+      line-height: 20px;
+      text-align: center;
+      cursor: default;
+      box-shadow: inset 0 1px rgba(255,255,255,.9);
+    }
+
+    .control:first-child {
+      border-bottom-left-radius: 4px;
+    }
+
+    .control.close {
+      border-bottom-right-radius: 4px;
+      background: linear-gradient(to bottom, #ffb7a8, #d9472f 55%, #a72114);
+      color: white;
+      text-shadow: 0 1px rgba(0,0,0,.5);
+    }
+
+    .control:hover {
+      filter: brightness(1.1);
+    }
+
+    .window-body {
+      height: calc(100% - 36px);
+      max-height: calc(100vh - 122px);
+      overflow: auto;
+      padding: 14px;
+      background: rgba(246, 250, 255, 0.88);
+    }
+
+    .window.maximized .window-body {
+      max-height: calc(100vh - 96px);
+    }
+
+    .hero-panel {
+      border-radius: 8px;
+      padding: 18px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.96), rgba(225,240,252,.92));
+      border: 1px solid rgba(155,190,220,.8);
+      box-shadow: inset 0 1px rgba(255,255,255,.9);
+      margin-bottom: 14px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 8px;
+      color: #123f72;
+    }
+
+    h1 {
+      font-size: 26px;
+      letter-spacing: -0.4px;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin-top: 4px;
+    }
+
+    h3 {
+      font-size: 15px;
+    }
+
+    p,
+    li {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    p {
+      margin: 7px 0;
+    }
+
+    ul {
+      margin: 6px 0 10px 20px;
+      padding: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      border-radius: 7px;
+      border: 1px solid rgba(160, 190, 220, 0.88);
+      background: rgba(255,255,255,.85);
+      padding: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.08), inset 0 1px rgba(255,255,255,.9);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: linear-gradient(to bottom, #ffffff, #ddecfb);
+      border: 1px solid #a7c5e2;
+      color: #16456d;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 9px;
+      margin-bottom: 12px;
+      background: linear-gradient(to bottom, #fff, #e5eef8);
+      border: 1px solid #b6c9dc;
       border-radius: 6px;
-      border: 2px solid #3a2010;
-      background: #cfa880;
     }
 
-    .rm > * { position: absolute; }
-
-    /* === ROOM STRUCTURE === */
-    .wall { top: 0; left: 0; right: 0; height: 63%; background: #cfa880; }
-    .wstripe {
-      top: 0; left: 0; right: 0; height: 63%;
-      background: repeating-linear-gradient(90deg, rgba(160,110,60,.09) 0 1px, transparent 1px 50px);
-      pointer-events: none; z-index: 1;
-    }
-    .ceil { top: 0; left: 0; right: 0; height: 2.2%; background: #b08050; z-index: 2; }
-    .base { top: 63%; left: 0; right: 0; height: 1.5%; background: #6a3a18; z-index: 2; }
-    .floor { top: 64.5%; left: 0; right: 0; bottom: 0; background: #8b6040; }
-    .fplank {
-      top: 64.5%; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(90deg, transparent 0 79px, rgba(0,0,0,.07) 79px 80px);
-      pointer-events: none;
-    }
-
-    /* === FURNITURE === */
-    .shelf {
-      top: 37%; left: 2%; width: 20%; height: 1.5%;
-      background: #7a5230; border-top: 1px solid #a07040; z-index: 4;
-    }
-    .desk {
-      bottom: 36%; left: 27%; right: 27%; height: 4%;
-      background: #a07040; border-top: 2px solid #c09050; z-index: 5;
-    }
-    .mstand-b { bottom: 40%; left: 43.5%; width: 8%; height: .7%; background: #aaa; z-index: 6; }
-    .mstand-n { bottom: 40.7%; left: 46%; width: 3%; height: 2.8%; background: #999; z-index: 6; }
-
-    /* === MONITOR === */
-    .monitor {
-      bottom: 43.5%; left: 33%; right: 33%; height: 20%;
-      background: #c0b8b0; border-radius: 5px 5px 3px 3px;
-      cursor: pointer; z-index: 7;
-      border: 1px solid #888; border-bottom: 3px solid #aaa;
-      transition: filter .2s;
-    }
-    .monitor:hover { filter: brightness(1.07); }
-    .bezel {
-      position: absolute; top: 8%; left: 7%; right: 7%; bottom: 14%;
-      background: #111; border-radius: 2px; overflow: hidden;
-    }
-    .screen {
-      width: 100%; height: 100%;
-      background: #0a1a0a;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      color: #00e040; font-family: 'VT323', monospace; font-size: .95em;
-      position: relative;
-    }
-    .scanl {
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,.16) 2px 4px);
-      pointer-events: none;
-    }
-    .mbrand {
-      position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%);
-      font-size: .44em; color: #777; font-family: monospace; letter-spacing: 2px;
-    }
-
-    /* === DESK ITEMS === */
-    .kbd {
-      bottom: 36%; left: 36%; right: 36%; height: 1.5%;
-      background: #c8c8c0; border-radius: 2px; z-index: 8; border: 1px solid #aaa;
-    }
-    .can {
-      bottom: 40.5%; right: 29%; width: 2%; height: 3.8%;
-      background: #c00; border-radius: 30% 30% 15% 15%; z-index: 8;
-      border-left: 1px solid #900;
-    }
-    .mouse {
-      bottom: 36.5%; right: 27.5%; width: 1.8%; height: 2.5%;
-      background: #d0d0c8; border-radius: 40% 40% 45% 45%; z-index: 8; border: 1px solid #aaa;
-    }
-
-    /* === CORKBOARD === */
-    .cork {
-      top: 4%; right: 2%; width: 22%; height: 58%;
-      background: #c89850; border: 5px solid #7a4820;
-      border-radius: 3px; z-index: 3; overflow: hidden;
-    }
-    .cork > * { position: absolute; }
-    .cpin {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #cc2222; transform: translate(-50%, -50%); z-index: 2;
-    }
-    .cn {
-      padding: 5px 7px; font-family: 'Permanent Marker', cursive;
-      font-size: .42em; line-height: 1.45; cursor: pointer;
-      transition: transform .15s; z-index: 1;
-    }
-    .cn:hover { z-index: 10; }
-    .cy { background: #fffde7; }
-    .cb { background: #e3f2fd; }
-    .cp { background: #fce4ec; }
-    .cg { background: #e8f5e9; }
-
-    /* === BOOT SCREEN === */
-    .boot {
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; z-index: 60;
-      flex-direction: column; align-items: center; justify-content: center;
-      color: #fff; display: none;
-    }
-    .boot.on { display: flex; }
-    .bprog {
-      width: 28%; height: 4px; background: #333;
-      border-radius: 2px; margin-top: 3%; overflow: hidden;
-    }
-    .bfill { height: 100%; width: 0; background: #4db8ff; transition: width .2s; }
-
-    /* === WINDOWS 7 OVERLAY === */
-    .w7 {
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(135deg, #004e98, #0082c8);
-      z-index: 50; opacity: 0; transition: opacity .35s;
-      display: none; flex-direction: column;
-    }
-    .w7.on { display: flex; }
-    .w7.vis { opacity: 1; }
-    .w7w {
-      flex: 1; overflow: auto;
-      padding: 3% 3% 1%;
-      display: flex; flex-wrap: wrap; gap: 2%;
-      align-content: flex-start; justify-content: center;
-    }
-    .aw {
-      width: 44%;
-      background: rgba(220,235,255,.9);
-      border: 1px solid rgba(255,255,255,.75);
+    .toolbar-button {
+      border: 1px solid #9db7d1;
       border-radius: 5px;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      font-size: .62em; align-self: flex-start; margin-bottom: 2%;
-    }
-    .atb {
-      padding: 5px 8px; display: flex;
-      justify-content: space-between; align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,.4);
-      background: rgba(255,255,255,.2); font-size: .88em;
-    }
-    .awc { display: flex; gap: 2px; }
-    .wc {
-      width: 14px; height: 11px;
-      border: 1px solid rgba(0,0,0,.2); border-radius: 2px;
-      background: rgba(255,255,255,.4); cursor: pointer;
-    }
-    .wcx { background: rgba(200,50,50,.65); }
-    .ab { background: rgba(242,244,250,.93); padding: 9px; border-radius: 0 0 4px 4px; }
-    .ab h3 { color: #003366; font-size: 1.1em; font-weight: 600; margin-bottom: 5px; }
-    .ab p { margin: 2px 0; color: #222; font-size: .95em; }
-    .ab fieldset {
-      border: 1px solid #ccc; border-radius: 3px;
-      padding: 6px; background: #fff; margin-bottom: 6px;
-    }
-    .ab legend { color: #003366; font-size: .88em; font-weight: bold; padding: 0 3px; }
-    .ab ul { margin: 0; padding-left: 14px; }
-    .ab li { margin: 2px 0; }
-    .w7bar {
-      height: 10%; min-height: 28px;
-      background: rgba(0,0,0,.52);
-      border-top: 1px solid rgba(255,255,255,.2);
-      display: flex; align-items: center; padding: 0 2%; flex-shrink: 0;
-    }
-    .w7orb {
-      width: 5.5%; aspect-ratio: 1;
-      background: radial-gradient(circle at 40% 35%, #6dd5ff, #0056cc);
-      border-radius: 50%; border: 1px solid rgba(255,255,255,.4);
-      cursor: pointer; margin-right: 2%; flex-shrink: 0;
-    }
-    .w7clk {
-      margin-left: auto; color: #fff;
-      font-size: .48em; text-align: right;
-      font-family: 'Segoe UI', sans-serif; line-height: 1.4;
+      padding: 5px 10px;
+      background: linear-gradient(to bottom, #fff, #dbeafb);
+      font-size: 12px;
+      cursor: default;
     }
 
-    @keyframes lava { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
-    @keyframes flicker { 0%,95%,100% { opacity: 1; } 97% { opacity: .55; } }
+    .address-bar {
+      flex: 1;
+      border: 1px solid #aab8c5;
+      border-radius: 4px;
+      padding: 5px 9px;
+      background: white;
+      font-size: 12px;
+      color: #40556b;
+    }
+
+    .folder-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .folder-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,.64);
+      border: 1px solid rgba(174,196,218,.78);
+    }
+
+    .folder-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .folder-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #143f69;
+      margin-bottom: 3px;
+    }
+
+    .folder-desc {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #32465c;
+    }
+
+    .taskbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      background:
+        linear-gradient(to bottom, rgba(72,128,184,.72), rgba(7,32,74,.9) 48%, rgba(3,18,45,.92));
+      border-top: 1px solid rgba(255,255,255,.45);
+      box-shadow: 0 -1px 14px rgba(0,0,0,.35);
+      backdrop-filter: blur(14px);
+      z-index: 1000;
+    }
+
+    .start-orb {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.75);
+      background:
+        radial-gradient(circle at 34% 24%, rgba(255,255,255,.9), transparent 15%),
+        radial-gradient(circle, #65dd57 0%, #16a938 38%, #08732a 65%, #044419 100%);
+      box-shadow: 0 0 16px rgba(106,235,102,.55), inset 0 1px rgba(255,255,255,.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      cursor: default;
+      flex: 0 0 auto;
+    }
+
+    .start-orb:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 0 22px rgba(106,235,102,.72), inset 0 1px rgba(255,255,255,.85);
+    }
+
+    .task-button {
+      height: 38px;
+      min-width: 128px;
+      max-width: 180px;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 0 12px;
+      border-radius: 5px;
+      border: 1px solid rgba(255,255,255,.38);
+      background: linear-gradient(to bottom, rgba(255,255,255,.24), rgba(87,152,210,.26) 45%, rgba(20,76,137,.42));
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      box-shadow: inset 0 1px rgba(255,255,255,.35);
+      font-size: 13px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: default;
+    }
+
+    .task-button.visible {
+      display: flex;
+    }
+
+    .task-button:hover,
+    .task-button.focused {
+      background: linear-gradient(to bottom, rgba(255,255,255,.42), rgba(100,185,250,.35) 45%, rgba(28,101,172,.55));
+    }
+
+    .system-tray {
+      margin-left: auto;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      font-size: 12px;
+      border-left: 1px solid rgba(255,255,255,.18);
+    }
+
+    .clock {
+      min-width: 74px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .start-menu {
+      position: fixed;
+      left: 8px;
+      bottom: 54px;
+      width: 390px;
+      height: 510px;
+      display: none;
+      background: rgba(20, 90, 160, 0.82);
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 8px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.55);
+      backdrop-filter: blur(18px);
+      z-index: 1100;
+      padding: 8px;
+    }
+
+    .start-menu.open {
+      display: grid;
+      grid-template-columns: 1.4fr .9fr;
+      gap: 8px;
+    }
+
+    .start-left,
+    .start-right {
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .start-left {
+      background: rgba(255,255,255,.95);
+      padding: 8px;
+    }
+
+    .start-right {
+      background: linear-gradient(to bottom, rgba(215,236,255,.7), rgba(107,166,221,.55));
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,.55);
+      padding: 10px;
+    }
+
+    .start-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,.8);
+      background: linear-gradient(to bottom, #ffffff, #bddaf7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: inset 0 1px rgba(255,255,255,.9), 0 6px 15px rgba(0,0,0,.25);
+      text-shadow: none;
+    }
+
+    .start-name {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .start-sub {
+      font-size: 12px;
+      opacity: .9;
+    }
+
+    .start-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 7px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #163955;
+      cursor: default;
+    }
+
+    .start-item:hover {
+      background: linear-gradient(to bottom, #e8f4ff, #c8e5ff);
+      outline: 1px solid #9cc5eb;
+    }
+
+    .start-link {
+      padding: 7px 4px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,.17);
+      cursor: default;
+    }
+
+    .start-link:hover {
+      background: rgba(255,255,255,.16);
+      border-radius: 4px;
+      padding-left: 8px;
+    }
+
+    .start-search {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      width: 224px;
+      height: 30px;
+      border: 1px solid #8ca8c2;
+      border-radius: 4px;
+      padding: 6px 9px;
+      font-size: 12px;
+      background: white;
+      color: #556;
+    }
+
+    .shutdown {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      height: 30px;
+      border: 1px solid rgba(0,0,0,.25);
+      border-radius: 4px;
+      color: white;
+      padding: 0 12px;
+      background: linear-gradient(to bottom, #e78a7f, #bf3425);
+      text-shadow: 0 1px rgba(0,0,0,.4);
+      font-size: 12px;
+    }
+
+    .sticky-note {
+      position: absolute;
+      right: 26px;
+      top: 24px;
+      width: 245px;
+      min-height: 170px;
+      background: linear-gradient(to bottom, #fff8a8, #f1db68);
+      box-shadow: 0 12px 25px rgba(0,0,0,.32);
+      transform: rotate(1deg);
+      padding: 16px;
+      z-index: 2;
+      color: #3c3415;
+      font-family: "Segoe Print", "Comic Sans MS", cursive;
+    }
+
+    .sticky-note h3 {
+      color: #3c3415;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .sticky-note p {
+      font-size: 13px;
+      line-height: 1.35;
+      margin: 6px 0;
+    }
+
+    .boot-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #05070d;
+      color: white;
+      z-index: 9999;
+      transition: opacity .65s ease, visibility .65s ease;
+    }
+
+    .boot-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .boot-logo {
+      display: grid;
+      grid-template-columns: repeat(2, 42px);
+      grid-template-rows: repeat(2, 42px);
+      gap: 5px;
+      transform: perspective(150px) rotateY(-8deg);
+      margin-bottom: 18px;
+      filter: drop-shadow(0 0 20px rgba(255,255,255,.24));
+    }
+
+    .pane-red { background: #f25022; }
+    .pane-green { background: #7fba00; }
+    .pane-blue { background: #00a4ef; }
+    .pane-yellow { background: #ffb900; }
+
+    .boot-text {
+      font-size: 22px;
+      margin-bottom: 24px;
+      color: #e9f3ff;
+      letter-spacing: .2px;
+    }
+
+    .boot-bar {
+      width: 210px;
+      height: 6px;
+      overflow: hidden;
+      background: #1b1d24;
+      border-radius: 999px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.8);
+    }
+
+    .boot-fill {
+      width: 42%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(to right, transparent, #58bfff, transparent);
+      animation: bootMove 1.15s infinite linear;
+    }
+
+    @keyframes bootMove {
+      from { transform: translateX(-140px); }
+      to { transform: translateX(250px); }
+    }
+
+    @media (max-width: 760px) {
+      .desktop {
+        grid-template-columns: repeat(2, 86px);
+        padding: 16px 10px;
+        gap: 8px;
+      }
+
+      .sticky-note {
+        display: none;
+      }
+
+      .window {
+        width: calc(100vw - 16px) !important;
+        left: 8px !important;
+        top: 8px !important;
+      }
+
+      .start-menu {
+        width: calc(100vw - 16px);
+        height: 470px;
+      }
+
+      .task-button {
+        min-width: 46px;
+        max-width: 52px;
+        padding: 0 9px;
+      }
+
+      .task-button span:last-child {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="rm-wrap">
-    <div class="rm" id="room">
+  <div class="boot-screen" id="bootScreen" aria-hidden="true">
+    <div class="boot-logo">
+      <div class="pane-red"></div>
+      <div class="pane-green"></div>
+      <div class="pane-blue"></div>
+      <div class="pane-yellow"></div>
+    </div>
+    <div class="boot-text">Starting Ernesto Desktop</div>
+    <div class="boot-bar"><div class="boot-fill"></div></div>
+  </div>
 
-      <!-- ROOM STRUCTURE -->
-      <div class="wall"></div>
-      <div class="wstripe"></div>
-      <div class="ceil"></div>
-      <div class="base"></div>
-      <div class="floor"></div>
-      <div class="fplank"></div>
+  <div class="wallpaper-flare"></div>
 
-      <!-- Band poster -->
-      <div style="position:absolute;top:4%;left:2%;width:9%;height:26%;background:#180e30;border:2px solid #c8a020;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;font-family:'Permanent Marker',cursive;font-size:.5em;color:#e8c020;text-align:center;line-height:1.5;padding:4%">
-        🎸<br>LIVE<br>1994<br><span style="font-size:.85em;opacity:.7">TOUR</span>
+  <main class="desktop" id="desktop">
+    <div class="desktop-icon" data-window="resumeWindow" ondblclick="openWindow('resumeWindow')">
+      <div class="icon-art">📄</div>
+      <div class="icon-label">Resume.exe</div>
+    </div>
+
+    <div class="desktop-icon" data-window="grantsWindow" ondblclick="openWindow('grantsWindow')">
+      <div class="icon-art">📁</div>
+      <div class="icon-label">Grants & Contracts</div>
+    </div>
+
+    <div class="desktop-icon" data-window="databasesWindow" ondblclick="openWindow('databasesWindow')">
+      <div class="icon-art">🗄️</div>
+      <div class="icon-label">Databases</div>
+    </div>
+
+    <div class="desktop-icon" data-window="mapsWindow" ondblclick="openWindow('mapsWindow')">
+      <div class="icon-art">🗺️</div>
+      <div class="icon-label">Maps & GIS</div>
+    </div>
+
+    <div class="desktop-icon" data-window="emergencyWindow" ondblclick="openWindow('emergencyWindow')">
+      <div class="icon-art">🚨</div>
+      <div class="icon-label">Emergency Ops</div>
+    </div>
+
+    <div class="desktop-icon" data-window="consultingWindow" ondblclick="openWindow('consultingWindow')">
+      <div class="icon-art">💼</div>
+      <div class="icon-label">Consulting</div>
+    </div>
+
+    <div class="desktop-icon" data-window="aboutWindow" ondblclick="openWindow('aboutWindow')">
+      <div class="icon-art">📝</div>
+      <div class="icon-label">About.txt</div>
+    </div>
+
+    <div class="desktop-icon" data-window="contactWindow" ondblclick="openWindow('contactWindow')">
+      <div class="icon-art">📬</div>
+      <div class="icon-label">Contact</div>
+    </div>
+  </main>
+
+  <aside class="sticky-note">
+    <h3>Recruiter note</h3>
+    <p>I build the system when there isn't one.</p>
+    <p>Grants, contracts, compliance, dashboards, emergency ops, and public-sector workflows.</p>
+    <p>Open to local, hybrid, remote, and consulting work.</p>
+  </aside>
+
+  <section class="window active" id="resumeWindow" style="left: 180px; top: 54px; height: 520px;">
+    <div class="titlebar">
+      <div class="window-title">📄 Resume.exe</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('resumeWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('resumeWindow')">□</div>
+        <div class="control close" onclick="closeWindow('resumeWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h1>Ernesto Diaz</h1>
+        <p><strong>Program | Grants | Operations | Systems</strong></p>
+        <p>Program and operations professional with 8+ years managing complex initiatives across research administration, defense, healthcare, public sector, transportation, and emergency management settings. Bilingual in English and Spanish.</p>
+        <div class="badge-row">
+          <span class="badge">Grants & Contracts</span>
+          <span class="badge">Research Administration</span>
+          <span class="badge">Compliance</span>
+          <span class="badge">Budgeting</span>
+          <span class="badge">Emergency Management</span>
+          <span class="badge">Power BI / Excel</span>
+        </div>
       </div>
 
-      <!-- Soccer pennant -->
-      <div style="position:absolute;top:3%;left:13%;width:8%;z-index:3">
-        <svg viewBox="0 0 44 62" style="width:100%" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="3,2 42,16 3,30" fill="#1a5fa8"/>
-          <polygon points="3,30 42,44 3,58" fill="#eeeeee"/>
-          <line x1="3" y1="2" x2="3" y2="58" stroke="#444" stroke-width="2.5"/>
-        </svg>
+      <div class="grid">
+        <div class="card">
+          <h3>Core identity</h3>
+          <p>I am the person who builds the system when there isn't one. I bring structure to complex environments and keep programs moving from planning through execution.</p>
+        </div>
+        <div class="card">
+          <h3>Federal funding</h3>
+          <p>Experience with NSF, DARPA, DOE, FEMA, FTA, CMS, Cal OES, and related compliance documentation, budgets, reporting, and grant workflows.</p>
+        </div>
+        <div class="card">
+          <h3>Technical toolkit</h3>
+          <p>Excel, Power BI, GIS/ArcGIS concepts, Cayuse, TrAMS, Epic, Visio, SharePoint, Google Workspace, Adobe tools, and Python project work.</p>
+        </div>
+        <div class="card">
+          <h3>Work style</h3>
+          <p>Analytical, practical, deadline-oriented, and comfortable translating messy requirements into usable systems, trackers, SOPs, and executive-ready summaries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="grantsWindow" style="left: 230px; top: 74px; height: 500px;">
+    <div class="titlebar">
+      <div class="window-title">📁 Grants & Contracts</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('grantsWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('grantsWindow')">□</div>
+        <div class="control close" onclick="closeWindow('grantsWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="toolbar">
+        <button class="toolbar-button">Back</button>
+        <button class="toolbar-button">Forward</button>
+        <div class="address-bar">Desktop > Portfolio > Grants & Contracts</div>
       </div>
 
-      <!-- Shelf -->
-      <div class="shelf"></div>
-
-      <!-- Lava lamp -->
-      <div style="position:absolute;bottom:63%;left:3%;width:5%;z-index:5">
-        <svg viewBox="0 0 30 56" style="width:100%" xmlns="http://www.w3.org/2000/svg">
-          <rect x="8" y="49" width="14" height="6" rx="2" fill="#333"/>
-          <ellipse cx="15" cy="28" rx="11" ry="18" fill="#e05010" style="animation:lava 3s ease-in-out infinite"/>
-          <rect x="9" y="0" width="12" height="6" rx="2" fill="#333"/>
-          <ellipse cx="10" cy="20" rx="3" ry="5" fill="rgba(255,255,255,.2)"/>
-        </svg>
-      </div>
-
-      <!-- Big monstera plant -->
-      <div style="position:absolute;bottom:35.8%;left:1%;width:16%;z-index:5">
-        <svg viewBox="0 0 80 130" style="width:100%" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="22,128 14,100 66,100 58,128" fill="#b05530"/>
-          <rect x="12" y="96" width="56" height="6" rx="2" fill="#c06840"/>
-          <line x1="40" y1="96" x2="40" y2="55" stroke="#3a6a28" stroke-width="3"/>
-          <line x1="40" y1="75" x2="18" y2="48" stroke="#3a6a28" stroke-width="2"/>
-          <line x1="40" y1="65" x2="60" y2="38" stroke="#3a6a28" stroke-width="2"/>
-          <line x1="40" y1="55" x2="28" y2="22" stroke="#3a6a28" stroke-width="2"/>
-          <ellipse cx="11" cy="43" rx="16" ry="8" fill="#2d8a40" transform="rotate(-35 11 43)"/>
-          <ellipse cx="63" cy="33" rx="17" ry="8" fill="#3a9a4a" transform="rotate(25 63 33)"/>
-          <ellipse cx="24" cy="17" rx="14" ry="7" fill="#2a8040" transform="rotate(-10 24 17)"/>
-          <ellipse cx="63" cy="33" rx="5" ry="3" fill="#3a7a28" transform="rotate(25 63 33)"/>
-        </svg>
-      </div>
-
-      <!-- Cactus -->
-      <div style="position:absolute;bottom:35.8%;left:13%;width:9%;z-index:5">
-        <svg viewBox="0 0 50 90" style="width:100%" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="12,88 8,68 42,68 38,88" fill="#b05530"/>
-          <rect x="6" y="64" width="38" height="6" rx="2" fill="#c06840"/>
-          <rect x="17" y="22" width="16" height="44" rx="8" fill="#4a8a30"/>
-          <rect x="5" y="36" width="14" height="8" rx="4" fill="#4a8a30"/>
-          <rect x="5" y="28" width="8" height="16" rx="4" fill="#4a8a30"/>
-          <rect x="31" y="42" width="14" height="8" rx="4" fill="#3a7a28"/>
-          <rect x="37" y="33" width="8" height="18" rx="4" fill="#3a7a28"/>
-          <line x1="25" y1="22" x2="25" y2="16" stroke="#c8c860" stroke-width="1"/>
-          <line x1="20" y1="30" x2="14" y2="27" stroke="#c8c860" stroke-width="1"/>
-          <line x1="30" y1="30" x2="36" y2="27" stroke="#c8c860" stroke-width="1"/>
-        </svg>
-      </div>
-
-      <!-- Guitar -->
-      <div style="position:absolute;bottom:35.8%;left:20%;width:5.5%;z-index:5">
-        <svg viewBox="0 0 28 110" style="width:100%" xmlns="http://www.w3.org/2000/svg">
-          <rect x="9" y="0" width="10" height="9" rx="2" fill="#7a4a1a"/>
-          <rect x="11" y="8" width="6" height="54" rx="3" fill="#8b5a2b"/>
-          <ellipse cx="14" cy="71" rx="10" ry="10" fill="#c87840"/>
-          <rect x="9" y="71" width="10" height="8" fill="#c87840"/>
-          <ellipse cx="14" cy="89" rx="12" ry="13" fill="#c87840"/>
-          <circle cx="14" cy="84" r="4" fill="#7a3a10"/>
-          <rect x="9" y="88" width="10" height="2" rx="1" fill="#5a2a08"/>
-          <line x1="14" y1="8" x2="14" y2="70" stroke="#d0d0a0" stroke-width=".8"/>
-          <line x1="12" y1="8" x2="12" y2="70" stroke="#d0d0a0" stroke-width=".5"/>
-          <line x1="16" y1="8" x2="16" y2="70" stroke="#d0d0a0" stroke-width=".5"/>
-        </svg>
-      </div>
-
-      <!-- Desk + stand -->
-      <div class="desk"></div>
-      <div class="mstand-b"></div>
-      <div class="mstand-n"></div>
-
-      <!-- CRT Monitor -->
-      <div class="monitor" id="monitor" title="Click to power on">
-        <div class="bezel">
-          <div class="screen" style="animation:flicker 14s infinite">
-            <div class="scanl"></div>
-            <div style="font-size:1.15em;z-index:1">ERNESTO</div>
-            <div style="font-size:.6em;opacity:.55;z-index:1">DIAZ.EXE</div>
-            <div style="font-size:.44em;margin-top:7%;opacity:.38;z-index:1">[ CLICK TO BOOT ]</div>
+      <div class="folder-list">
+        <div class="folder-item">
+          <div class="folder-icon">📂</div>
+          <div>
+            <div class="folder-title">Pre-Award</div>
+            <div class="folder-desc">Proposal development, sponsor review, budgets, justifications, forms, and submission coordination.</div>
           </div>
         </div>
-        <div class="mbrand">ACER™</div>
-      </div>
-
-      <!-- Desk accessories -->
-      <div class="kbd"></div>
-      <div class="can"></div>
-      <div class="mouse"></div>
-
-      <!-- Corkboard -->
-      <div class="cork">
-        <div class="cpin" style="top:18%;left:35%"></div>
-        <div class="cn cy" style="top:10%;left:5%;width:58%;transform:rotate(-2deg)">
-          <strong>Ernesto Diaz</strong><br>
-          Grants &amp; Contracts<br>
-          NSF · DARPA · DOE<br>
-          FEMA · FTA · CMS
-        </div>
-        <div class="cpin" style="top:43%;left:74%"></div>
-        <div class="cn cb" style="top:37%;left:54%;width:43%;transform:rotate(3deg)">
-          Python 🐍<br>GIS + Maps<br>Analytics
-        </div>
-        <div class="cpin" style="top:64%;left:26%"></div>
-        <div class="cn cp" style="top:58%;left:5%;width:48%;transform:rotate(-1deg)">
-          🎸 Guitar<br>⚽ Soccer<br>🌱 Plants
-        </div>
-        <div style="position:absolute;top:38%;left:5%;width:44%;height:20%;background:#e0d0c0;border:3px solid #fff;display:flex;align-items:center;justify-content:center;transform:rotate(-3deg);font-family:'Permanent Marker',cursive;font-size:.4em;color:#888;text-align:center">
-          ⚽<br>SBCAG 2019
-        </div>
-        <div class="cpin" style="top:87%;left:68%"></div>
-        <div class="cn cg" style="top:81%;left:50%;width:46%;transform:rotate(2deg);font-size:.36em">
-          📎 github/ernesto-diaz
-        </div>
-      </div>
-
-      <!-- Boot screen -->
-      <div class="boot" id="boot">
-        <div style="color:#4db8ff;font-family:'VT323',monospace;font-size:1.1em;margin-bottom:4%">Microsoft Windows</div>
-        <svg width="10%" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="36" height="36" fill="#f25022"/>
-          <rect x="42" y="2" width="36" height="36" fill="#7fba00"/>
-          <rect x="2" y="42" width="36" height="36" fill="#00a4ef"/>
-          <rect x="42" y="42" width="36" height="36" fill="#ffb900"/>
-        </svg>
-        <div class="bprog"><div class="bfill" id="bfill"></div></div>
-        <div style="font-family:'VT323',monospace;font-size:.58em;color:#555;margin-top:2%">Loading personal files...</div>
-      </div>
-
-      <!-- Windows 7 overlay -->
-      <div class="w7" id="w7">
-        <div class="w7w">
-          <div class="aw">
-            <div class="atb">
-              <span>User_Profile.txt</span>
-              <div class="awc">
-                <div class="wc"></div><div class="wc"></div>
-                <div class="wc wcx" onclick="closeW7()"></div>
-              </div>
-            </div>
-            <div class="ab">
-              <h3>Ernesto Diaz</h3>
-              <p><strong>Grants &amp; Contracts Analyst</strong></p>
-              <p style="margin-top:5px">8+ years across the full pre/post-award lifecycle. Federal sponsors: NSF, DARPA, DOE, FEMA, FTA, CMS.</p>
-              <p style="margin-top:5px;color:#555">📍 Santa Barbara, CA &nbsp;·&nbsp; Bilingual EN/ES</p>
-              <p style="margin-top:3px;color:#555">First-gen college grad. Philosophy brain. Logic-first.</p>
-            </div>
-          </div>
-          <div class="aw">
-            <div class="atb">
-              <span>Experience.exe</span>
-              <div class="awc">
-                <div class="wc"></div><div class="wc"></div>
-                <div class="wc wcx" onclick="closeW7()"></div>
-              </div>
-            </div>
-            <div class="ab">
-              <fieldset>
-                <legend>Work History</legend>
-                <p>SBCAG — Grants Analyst</p>
-                <p>UCSB Computer Science — C&amp;G Analyst</p>
-                <p>County of Santa Barbara — AOP Senior</p>
-                <p>Engineering Solutions — CMS/RHTP (1099)</p>
-              </fieldset>
-              <fieldset>
-                <legend>Certifications</legend>
-                <ul>
-                  <li>Google Data Analytics</li>
-                  <li>Google Project Management</li>
-                  <li>B.A. Philosophy — UCSB</li>
-                </ul>
-              </fieldset>
-            </div>
-          </div>
-          <div class="aw">
-            <div class="atb">
-              <span>Creative_Directory</span>
-              <div class="awc">
-                <div class="wc"></div><div class="wc"></div>
-                <div class="wc wcx" onclick="closeW7()"></div>
-              </div>
-            </div>
-            <div class="ab">
-              <fieldset>
-                <legend>Projects</legend>
-                <ul>
-                  <li>RAG Resume Tool (ChromaDB / Python)</li>
-                  <li>GIS Grant Mapping</li>
-                  <li>This website 😎</li>
-                </ul>
-              </fieldset>
-              <fieldset>
-                <legend>Other Stuff</legend>
-                <ul>
-                  <li>⚽ Soccer coach (Dribbler)</li>
-                  <li>🎸 Guitar — WIP</li>
-                  <li>🌱 Plants — thriving</li>
-                  <li>🍺 SB taproom regular</li>
-                </ul>
-              </fieldset>
-            </div>
+        <div class="folder-item">
+          <div class="folder-icon">📂</div>
+          <div>
+            <div class="folder-title">Post-Award</div>
+            <div class="folder-desc">Financial monitoring, closeout support, cost allowability, reporting, and deliverable tracking.</div>
           </div>
         </div>
-        <div class="w7bar">
-          <div class="w7orb" onclick="closeW7()" title="Close"></div>
-          <div style="width:1px;height:55%;background:rgba(255,255,255,.2);margin:0 2%"></div>
-          <div style="color:#fff;font-size:.48em;opacity:.8;font-family:'Segoe UI',sans-serif">ernesto-desktop</div>
-          <div class="w7clk" id="w7clk"></div>
+        <div class="folder-item">
+          <div class="folder-icon">📂</div>
+          <div>
+            <div class="folder-title">Sponsors</div>
+            <div class="folder-desc">NSF, DARPA, DOE, DoD/Air Force, FEMA, FTA, CMS, Cal OES, and local/state funding programs.</div>
+          </div>
+        </div>
+        <div class="folder-item">
+          <div class="folder-icon">📂</div>
+          <div>
+            <div class="folder-title">FTA / TrAMS</div>
+            <div class="folder-desc">5310 program support, ALI logic, executive summaries, milestones, and budget validation.</div>
+          </div>
         </div>
       </div>
 
-    </div><!-- end .rm -->
-  </div><!-- end .rm-wrap -->
+      <div class="hero-panel" style="margin-top: 14px;">
+        <h2>How this translates</h2>
+        <p>I can support grant teams that need someone who understands both the technical compliance side and the operational reality behind the program. I am comfortable reading solicitations, building trackers, coordinating inputs, reviewing budgets, and turning messy source material into clean submission or reporting packages.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="databasesWindow" style="left: 280px; top: 94px; height: 520px;">
+    <div class="titlebar">
+      <div class="window-title">🗄️ Databases</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('databasesWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('databasesWindow')">□</div>
+        <div class="control close" onclick="closeWindow('databasesWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h2>Portfolio databases and trackers</h2>
+        <p>This section should eventually hold screenshots, sample records, downloadable templates, and GitHub links for the systems I build.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Transportation Project Tracker</h3>
+          <p>Structured project database for transportation funding, mapping, cost tracking, project status, and public-facing summaries.</p>
+          <div class="badge-row"><span class="badge">Excel</span><span class="badge">Power BI</span><span class="badge">GIS-ready</span></div>
+        </div>
+        <div class="card">
+          <h3>Grant Compliance Tracker</h3>
+          <p>Tracker concept for deliverables, match, funding source, budget category, deadlines, and documentation status.</p>
+          <div class="badge-row"><span class="badge">Compliance</span><span class="badge">Deadlines</span><span class="badge">Audit-ready</span></div>
+        </div>
+        <div class="card">
+          <h3>RAG Resume Tool</h3>
+          <p>Python/ChromaDB concept for retrieving relevant work history, skills, and project examples based on job postings.</p>
+          <div class="badge-row"><span class="badge">Python</span><span class="badge">ChromaDB</span><span class="badge">Local AI</span></div>
+        </div>
+        <div class="card">
+          <h3>COI / Proposal Tracker</h3>
+          <p>Consulting support tracker for conflicts of interest, exclusivity periods, RFP references, deadlines, and submitted proposals.</p>
+          <div class="badge-row"><span class="badge">Consulting</span><span class="badge">RFPs</span><span class="badge">Risk control</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="mapsWindow" style="left: 330px; top: 114px; height: 500px;">
+    <div class="titlebar">
+      <div class="window-title">🗺️ Maps & GIS</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('mapsWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('mapsWindow')">□</div>
+        <div class="control close" onclick="closeWindow('mapsWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h2>Maps, site data, and visual systems</h2>
+        <p>I use maps and layouts to make complex programs easier to understand. This includes transportation project maps, emergency site surveys, shelter layouts, and map-ready project databases.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Transportation maps</h3>
+          <p>Project locations, city fields, latitude/longitude, status, funding source, and public-facing descriptions.</p>
+        </div>
+        <div class="card">
+          <h3>Emergency facility layouts</h3>
+          <p>To-scale shelter and facility planning using room dimensions, capacity logic, ADA/shelter considerations, and operational flow.</p>
+        </div>
+        <div class="card">
+          <h3>Power BI map layers</h3>
+          <p>Dashboard-ready data that lets non-technical users filter by project, status, location, and funding source.</p>
+        </div>
+        <div class="card">
+          <h3>Site surveys</h3>
+          <p>Field-collected information translated into usable planning documents, maps, and readiness references.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="emergencyWindow" style="left: 380px; top: 134px; height: 505px;">
+    <div class="titlebar">
+      <div class="window-title">🚨 Emergency Ops</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('emergencyWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('emergencyWindow')">□</div>
+        <div class="control close" onclick="closeWindow('emergencyWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h2>Emergency management and operational readiness</h2>
+        <p>Experience supporting EOC operations, mass care and shelter activation, COOP planning, FEMA documentation, site readiness, and interagency coordination.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>EOC operations</h3>
+          <p>Supported emergency operations during COVID-19 and storm response, including staffing, logistics, documentation, and coordination.</p>
+        </div>
+        <div class="card">
+          <h3>Mass care and shelter</h3>
+          <p>Worked across shelter/hotel activation, staffing schedules, volunteer onboarding, and operational checklists.</p>
+        </div>
+        <div class="card">
+          <h3>Temporary Evacuation Points</h3>
+          <p>Created documentation and visual references to support emergency response site planning and readiness.</p>
+        </div>
+        <div class="card">
+          <h3>FEMA documentation</h3>
+          <p>Experience tracking records, hours, schedules, and operational details that support reimbursement and compliance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="consultingWindow" style="left: 260px; top: 86px; height: 500px;">
+    <div class="titlebar">
+      <div class="window-title">💼 Consulting</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('consultingWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('consultingWindow')">□</div>
+        <div class="control close" onclick="closeWindow('consultingWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h2>Consulting support</h2>
+        <p>For organizations that need grant, compliance, proposal, dashboard, or operational workflow help without adding a full-time role immediately.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Grant readiness review</h3>
+          <p>Assess documents, eligibility, deadlines, attachments, budgets, narratives, and submission risk.</p>
+        </div>
+        <div class="card">
+          <h3>Proposal support</h3>
+          <p>Build compliance matrices, coordinate inputs, draft sections, review budgets, and prepare submission packages.</p>
+        </div>
+        <div class="card">
+          <h3>Tracker and dashboard setup</h3>
+          <p>Create Excel, Power BI, or lightweight database systems for grants, projects, deliverables, and reporting.</p>
+        </div>
+        <div class="card">
+          <h3>SOP and workflow cleanup</h3>
+          <p>Translate scattered processes into usable procedures, checklists, templates, and shared operating systems.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="aboutWindow" style="left: 210px; top: 70px; height: 480px;">
+    <div class="titlebar">
+      <div class="window-title">📝 About.txt</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('aboutWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('aboutWindow')">□</div>
+        <div class="control close" onclick="closeWindow('aboutWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h2>About Ernesto</h2>
+        <p>I am a systems-minded program and operations professional based in Santa Barbara County. My background sits at the intersection of grants, contracts, public-sector operations, emergency management, research administration, healthcare support, and data tools.</p>
+        <p>I like work where the process is messy, the stakes are real, and someone needs to build the structure that lets the team move forward.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Work brain</h3>
+          <p>Compliance, budgets, workflows, public service, stakeholder coordination, data tracking, and operational problem-solving.</p>
+        </div>
+        <div class="card">
+          <h3>Creative brain</h3>
+          <p>Music, guitar, design, retro interfaces, plants, maps, and building weird useful tools that look better than spreadsheets should.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="window" id="contactWindow" style="left: 300px; top: 110px; height: 420px;">
+    <div class="titlebar">
+      <div class="window-title">📬 Contact</div>
+      <div class="window-controls">
+        <div class="control" onclick="minimizeWindow('contactWindow')">_</div>
+        <div class="control" onclick="maximizeWindow('contactWindow')">□</div>
+        <div class="control close" onclick="closeWindow('contactWindow')">×</div>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="hero-panel">
+        <h2>Contact</h2>
+        <p><strong>Email:</strong> <a href="mailto:erniediaz11@gmail.com">erniediaz11@gmail.com</a></p>
+        <p><strong>Location:</strong> Santa Barbara County, CA</p>
+        <p><strong>GitHub:</strong> <a href="https://github.com/erniediaz11" target="_blank" rel="noopener">github.com/erniediaz11</a></p>
+        <p><strong>Portfolio:</strong> <a href="https://erniediaz11.github.io/" target="_blank" rel="noopener">erniediaz11.github.io</a></p>
+      </div>
+      <div class="card">
+        <h3>Best fit</h3>
+        <p>Grants, contracts, compliance, research administration, proposal support, public-sector operations, emergency management, dashboards, trackers, and consulting work.</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="start-menu" id="startMenu">
+    <div class="start-left">
+      <div class="start-item" onclick="openWindow('resumeWindow')">📄 Resume.exe</div>
+      <div class="start-item" onclick="openWindow('grantsWindow')">📁 Grants & Contracts</div>
+      <div class="start-item" onclick="openWindow('databasesWindow')">🗄️ Databases</div>
+      <div class="start-item" onclick="openWindow('mapsWindow')">🗺️ Maps & GIS</div>
+      <div class="start-item" onclick="openWindow('emergencyWindow')">🚨 Emergency Ops</div>
+      <div class="start-item" onclick="openWindow('consultingWindow')">💼 Consulting</div>
+      <div class="start-item" onclick="openWindow('aboutWindow')">📝 About.txt</div>
+      <div class="start-item" onclick="openWindow('contactWindow')">📬 Contact</div>
+      <input class="start-search" value="Search programs and files" readonly />
+    </div>
+    <div class="start-right">
+      <div class="start-profile">
+        <div class="avatar">🐒</div>
+        <div>
+          <div class="start-name">Ernesto Diaz</div>
+          <div class="start-sub">System Builder</div>
+        </div>
+      </div>
+      <div class="start-link" onclick="openWindow('databasesWindow')">Documents</div>
+      <div class="start-link" onclick="openWindow('mapsWindow')">Pictures / Maps</div>
+      <div class="start-link" onclick="openWindow('grantsWindow')">Recent Projects</div>
+      <div class="start-link" onclick="openWindow('consultingWindow')">Consulting</div>
+      <div class="start-link" onclick="openWindow('contactWindow')">Connect</div>
+      <button class="shutdown" onclick="fakeShutdown()">Shut down</button>
+    </div>
+  </nav>
+
+  <footer class="taskbar">
+    <div class="start-orb" onclick="toggleStartMenu()" title="Start">⊞</div>
+    <div class="task-button visible focused" id="task-resumeWindow" onclick="toggleWindow('resumeWindow')"><span>📄</span><span>Resume.exe</span></div>
+    <div class="task-button" id="task-grantsWindow" onclick="toggleWindow('grantsWindow')"><span>📁</span><span>Grants</span></div>
+    <div class="task-button" id="task-databasesWindow" onclick="toggleWindow('databasesWindow')"><span>🗄️</span><span>Databases</span></div>
+    <div class="task-button" id="task-mapsWindow" onclick="toggleWindow('mapsWindow')"><span>🗺️</span><span>Maps</span></div>
+    <div class="task-button" id="task-emergencyWindow" onclick="toggleWindow('emergencyWindow')"><span>🚨</span><span>Emergency</span></div>
+    <div class="task-button" id="task-consultingWindow" onclick="toggleWindow('consultingWindow')"><span>💼</span><span>Consulting</span></div>
+    <div class="task-button" id="task-aboutWindow" onclick="toggleWindow('aboutWindow')"><span>📝</span><span>About</span></div>
+    <div class="task-button" id="task-contactWindow" onclick="toggleWindow('contactWindow')"><span>📬</span><span>Contact</span></div>
+    <div class="system-tray">
+      <span>▴</span>
+      <span>📶</span>
+      <span>🔊</span>
+      <div class="clock" id="clock"></div>
+    </div>
+  </footer>
 
   <script>
-    var mon  = document.getElementById('monitor'),
-        boot = document.getElementById('boot'),
-        w7   = document.getElementById('w7'),
-        bf   = document.getElementById('bfill'),
-        clk  = document.getElementById('w7clk');
+    let topZ = 30;
+    const openWindows = new Set(['resumeWindow']);
 
-    mon.addEventListener('click', function () {
-      boot.classList.add('on');
-      var p = 0;
-      var t = setInterval(function () {
-        p += Math.random() * 18 + 4;
-        if (p >= 100) {
-          p = 100;
-          clearInterval(t);
-          setTimeout(function () {
-            boot.classList.remove('on');
-            w7.classList.add('on');
-            setTimeout(function () { w7.classList.add('vis'); }, 30);
-          }, 320);
-        }
-        bf.style.width = Math.min(p, 100) + '%';
-      }, 180);
+    const titles = {
+      resumeWindow: 'Resume.exe',
+      grantsWindow: 'Grants',
+      databasesWindow: 'Databases',
+      mapsWindow: 'Maps',
+      emergencyWindow: 'Emergency',
+      consultingWindow: 'Consulting',
+      aboutWindow: 'About',
+      contactWindow: 'Contact'
+    };
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('bootScreen').classList.add('hidden');
+      }, 1100);
+      updateClock();
+      setInterval(updateClock, 1000);
+      prepareDragging();
+      prepareDesktopIcons();
     });
 
-    function closeW7() {
-      w7.classList.remove('vis');
-      setTimeout(function () {
-        w7.classList.remove('on');
-        bf.style.width = '0%';
-      }, 380);
+    function openWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.add('active');
+      win.style.zIndex = ++topZ;
+      openWindows.add(id);
+      const task = document.getElementById('task-' + id);
+      if (task) task.classList.add('visible');
+      focusTask(id);
+      closeStartMenu();
     }
 
-    function tick() {
-      var n = new Date();
-      clk.innerHTML =
-        n.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) +
-        '<br>' +
-        n.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    function closeWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.remove('active');
+      openWindows.delete(id);
+      const task = document.getElementById('task-' + id);
+      if (task) task.classList.remove('visible', 'focused');
     }
-    tick();
-    setInterval(tick, 1000);
+
+    function minimizeWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.remove('active');
+      const task = document.getElementById('task-' + id);
+      if (task) task.classList.add('visible');
+    }
+
+    function maximizeWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.toggle('maximized');
+      win.style.zIndex = ++topZ;
+      focusTask(id);
+    }
+
+    function toggleWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      if (win.classList.contains('active') && Number(win.style.zIndex) === topZ) {
+        minimizeWindow(id);
+      } else {
+        openWindow(id);
+      }
+    }
+
+    function focusTask(id) {
+      document.querySelectorAll('.task-button').forEach(btn => btn.classList.remove('focused'));
+      const task = document.getElementById('task-' + id);
+      if (task) task.classList.add('focused');
+    }
+
+    function toggleStartMenu() {
+      const menu = document.getElementById('startMenu');
+      menu.classList.toggle('open');
+    }
+
+    function closeStartMenu() {
+      document.getElementById('startMenu').classList.remove('open');
+    }
+
+    function fakeShutdown() {
+      closeStartMenu();
+      const boot = document.getElementById('bootScreen');
+      boot.classList.remove('hidden');
+      boot.querySelector('.boot-text').textContent = 'Logging off Ernesto Desktop';
+      setTimeout(() => {
+        boot.querySelector('.boot-text').textContent = 'Starting Ernesto Desktop';
+        boot.classList.add('hidden');
+      }, 1300);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const date = now.toLocaleDateString([], { month: 'numeric', day: 'numeric', year: 'numeric' });
+      document.getElementById('clock').innerHTML = `${time}<br>${date}`;
+    }
+
+    function prepareDesktopIcons() {
+      document.querySelectorAll('.desktop-icon').forEach(icon => {
+        icon.addEventListener('click', e => {
+          document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+          icon.classList.add('selected');
+        });
+      });
+
+      document.body.addEventListener('click', e => {
+        if (!e.target.closest('.desktop-icon') && !e.target.closest('.start-menu') && !e.target.closest('.start-orb')) {
+          document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+          closeStartMenu();
+        }
+      });
+    }
+
+    function prepareDragging() {
+      document.querySelectorAll('.window').forEach(win => {
+        const titlebar = win.querySelector('.titlebar');
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        win.addEventListener('mousedown', () => {
+          win.style.zIndex = ++topZ;
+          focusTask(win.id);
+        });
+
+        titlebar.addEventListener('mousedown', e => {
+          if (e.target.closest('.control')) return;
+          if (win.classList.contains('maximized')) return;
+          isDragging = true;
+          offsetX = e.clientX - win.offsetLeft;
+          offsetY = e.clientY - win.offsetTop;
+          document.body.style.cursor = 'move';
+        });
+
+        document.addEventListener('mousemove', e => {
+          if (!isDragging) return;
+          const maxLeft = window.innerWidth - 80;
+          const maxTop = window.innerHeight - 95;
+          win.style.left = Math.max(0, Math.min(e.clientX - offsetX, maxLeft)) + 'px';
+          win.style.top = Math.max(0, Math.min(e.clientY - offsetY, maxTop)) + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+          document.body.style.cursor = 'default';
+        });
+      });
+    }
   </script>
 </body>
 </html>
