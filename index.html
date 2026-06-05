@@ -49,6 +49,11 @@
       text-decoration: underline;
     }
 
+    .window-body,
+    .window-body * {
+      user-select: text;
+    }
+
     .wallpaper-flare {
       position: fixed;
       inset: 0;
@@ -214,10 +219,91 @@
     .hero-panel {
       border-radius: 8px;
       padding: 18px;
-      background: linear-gradient(to bottom, rgba(255,255,255,.96), rgba(225,240,252,.92));
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.98), rgba(226,241,252,.92) 70%, rgba(255,246,220,.9));
       border: 1px solid rgba(155,190,220,.8);
       box-shadow: inset 0 1px rgba(255,255,255,.9);
       margin-bottom: 14px;
+    }
+
+    .kicker {
+      margin: 0 0 6px;
+      color: #6b4b09;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 620px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 7px 11px;
+      border-radius: 5px;
+      border: 1px solid #8fb5d9;
+      background: linear-gradient(to bottom, #ffffff, #d8eafa);
+      color: #123f72;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: inset 0 1px rgba(255,255,255,.9), 0 2px 5px rgba(0,0,0,.08);
+    }
+
+    .link-button.primary {
+      border-color: #0d5e9f;
+      background: linear-gradient(to bottom, #2789d2, #0f5f9e);
+      color: white;
+      text-shadow: 0 1px rgba(0,0,0,.35);
+    }
+
+    .link-button:hover {
+      filter: brightness(1.04);
+      text-decoration: none;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      padding: 10px;
+      border: 1px solid rgba(148, 181, 211, .82);
+      border-radius: 7px;
+      background: rgba(255,255,255,.72);
+      box-shadow: inset 0 1px rgba(255,255,255,.9);
+    }
+
+    .metric strong {
+      display: block;
+      color: #123f72;
+      font-size: 18px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      display: block;
+      color: #40556b;
+      font-size: 12px;
+      line-height: 1.25;
     }
 
     h1,
@@ -672,8 +758,23 @@
 
       .window {
         width: calc(100vw - 16px) !important;
+        height: calc(100vh - 72px) !important;
+        min-height: 0;
         left: 8px !important;
         top: 8px !important;
+      }
+
+      .window-body {
+        max-height: calc(100vh - 108px);
+      }
+
+      .metric-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
       }
 
       .start-menu {
@@ -689,6 +790,32 @@
 
       .task-button span:last-child {
         display: none;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .desktop {
+        grid-template-columns: repeat(2, 78px);
+      }
+
+      .desktop-icon {
+        width: 78px;
+      }
+
+      .icon-label {
+        font-size: 11px;
+      }
+
+      .start-menu.open {
+        grid-template-columns: 1fr;
+      }
+
+      .start-right {
+        display: none;
+      }
+
+      .start-search {
+        width: calc(100% - 32px);
       }
     }
   </style>
@@ -750,10 +877,10 @@
   </main>
 
   <aside class="sticky-note">
-    <h3>Recruiter note</h3>
-    <p>I build the system when there isn't one.</p>
+    <h3>Now loading</h3>
     <p>Grants, contracts, compliance, dashboards, emergency ops, and public-sector workflows.</p>
-    <p>Open to local, hybrid, remote, and consulting work.</p>
+    <p>Santa Barbara County based. Remote, hybrid, and consulting friendly.</p>
+    <p><strong>Status:</strong> building useful systems out of messy inputs.</p>
   </aside>
 
   <section class="window active" id="resumeWindow" style="left: 180px; top: 54px; height: 520px;">
@@ -767,9 +894,15 @@
     </div>
     <div class="window-body">
       <div class="hero-panel">
+        <div class="kicker">Portfolio desktop</div>
         <h1>Ernesto Diaz</h1>
         <p><strong>Program | Grants | Operations | Systems</strong></p>
-        <p>Program and operations professional with 8+ years managing complex initiatives across research administration, defense, healthcare, public sector, transportation, and emergency management settings. Bilingual in English and Spanish.</p>
+        <p class="lead">I help grant-funded and public-sector teams turn messy requirements into working systems: budgets, trackers, compliance files, dashboards, maps, SOPs, and clean executive-ready summaries.</p>
+        <div class="hero-actions">
+          <a class="link-button primary" href="mailto:erniediaz11@gmail.com">Email Ernesto</a>
+          <a class="link-button" href="https://github.com/erniediaz11" target="_blank" rel="noopener">GitHub</a>
+          <a class="link-button" href="#contactWindow" onclick="openWindow('contactWindow')">Contact Card</a>
+        </div>
         <div class="badge-row">
           <span class="badge">Grants & Contracts</span>
           <span class="badge">Research Administration</span>
@@ -780,14 +913,21 @@
         </div>
       </div>
 
+      <div class="metric-strip">
+        <div class="metric"><strong>8+</strong><span>years across grants, contracts, and operations</span></div>
+        <div class="metric"><strong>EN/ES</strong><span>bilingual communication and stakeholder support</span></div>
+        <div class="metric"><strong>Federal</strong><span>NSF, DARPA, DOE, FEMA, FTA, CMS exposure</span></div>
+        <div class="metric"><strong>Systems</strong><span>trackers, dashboards, maps, SOPs, and workflows</span></div>
+      </div>
+
       <div class="grid">
         <div class="card">
-          <h3>Core identity</h3>
-          <p>I am the person who builds the system when there isn't one. I bring structure to complex environments and keep programs moving from planning through execution.</p>
+          <h3>What I am good at</h3>
+          <p>Taking ambiguous program needs, reading the rules, organizing the inputs, and building the operating structure that lets people move.</p>
         </div>
         <div class="card">
           <h3>Federal funding</h3>
-          <p>Experience with NSF, DARPA, DOE, FEMA, FTA, CMS, Cal OES, and related compliance documentation, budgets, reporting, and grant workflows.</p>
+          <p>Pre-award, post-award, sponsor review, budget logic, reporting, documentation, closeout support, and compliance tracking.</p>
         </div>
         <div class="card">
           <h3>Technical toolkit</h3>
@@ -850,7 +990,7 @@
 
       <div class="hero-panel" style="margin-top: 14px;">
         <h2>How this translates</h2>
-        <p>I can support grant teams that need someone who understands both the technical compliance side and the operational reality behind the program. I am comfortable reading solicitations, building trackers, coordinating inputs, reviewing budgets, and turning messy source material into clean submission or reporting packages.</p>
+        <p>I can support grant teams that need someone who understands both the compliance side and the operational reality behind the program. I am comfortable reading solicitations, building trackers, coordinating inputs, reviewing budgets, and turning messy source material into clean submission or reporting packages.</p>
       </div>
     </div>
   </section>
@@ -866,8 +1006,8 @@
     </div>
     <div class="window-body">
       <div class="hero-panel">
-        <h2>Portfolio databases and trackers</h2>
-        <p>This section should eventually hold screenshots, sample records, downloadable templates, and GitHub links for the systems I build.</p>
+        <h2>Databases, trackers, and decision tools</h2>
+        <p>I build practical systems that help teams answer basic but high-stakes questions: what is due, who owns it, what funding source applies, what changed, and what needs attention next.</p>
       </div>
 
       <div class="grid">
@@ -878,12 +1018,12 @@
         </div>
         <div class="card">
           <h3>Grant Compliance Tracker</h3>
-          <p>Tracker concept for deliverables, match, funding source, budget category, deadlines, and documentation status.</p>
+          <p>Deliverables, match, funding source, budget category, deadlines, documentation status, and reporting risk in one audit-ready view.</p>
           <div class="badge-row"><span class="badge">Compliance</span><span class="badge">Deadlines</span><span class="badge">Audit-ready</span></div>
         </div>
         <div class="card">
           <h3>RAG Resume Tool</h3>
-          <p>Python/ChromaDB concept for retrieving relevant work history, skills, and project examples based on job postings.</p>
+          <p>Python and ChromaDB project for retrieving relevant work history, skills, and project examples against job postings.</p>
           <div class="badge-row"><span class="badge">Python</span><span class="badge">ChromaDB</span><span class="badge">Local AI</span></div>
         </div>
         <div class="card">
@@ -907,7 +1047,7 @@
     <div class="window-body">
       <div class="hero-panel">
         <h2>Maps, site data, and visual systems</h2>
-        <p>I use maps and layouts to make complex programs easier to understand. This includes transportation project maps, emergency site surveys, shelter layouts, and map-ready project databases.</p>
+        <p>I use maps, layouts, and location-aware data to make complex programs easier to understand. This includes transportation project maps, emergency site surveys, shelter layouts, and map-ready project databases.</p>
       </div>
       <div class="grid">
         <div class="card">
@@ -977,7 +1117,7 @@
     <div class="window-body">
       <div class="hero-panel">
         <h2>Consulting support</h2>
-        <p>For organizations that need grant, compliance, proposal, dashboard, or operational workflow help without adding a full-time role immediately.</p>
+        <p>For organizations that need grant, compliance, proposal, dashboard, or operational workflow help without adding a full-time role immediately. Useful for deadline crunches, cleanup projects, and teams that need structure fast.</p>
       </div>
       <div class="grid">
         <div class="card">
@@ -1013,7 +1153,7 @@
       <div class="hero-panel">
         <h2>About Ernesto</h2>
         <p>I am a systems-minded program and operations professional based in Santa Barbara County. My background sits at the intersection of grants, contracts, public-sector operations, emergency management, research administration, healthcare support, and data tools.</p>
-        <p>I like work where the process is messy, the stakes are real, and someone needs to build the structure that lets the team move forward.</p>
+        <p>I like work where the process is messy, the stakes are real, and someone needs to build the structure that lets the team move forward. First-gen college grad, philosophy-trained, logic-first, and allergic to chaos that could have been a spreadsheet.</p>
       </div>
       <div class="grid">
         <div class="card">
@@ -1044,10 +1184,14 @@
         <p><strong>Location:</strong> Santa Barbara County, CA</p>
         <p><strong>GitHub:</strong> <a href="https://github.com/erniediaz11" target="_blank" rel="noopener">github.com/erniediaz11</a></p>
         <p><strong>Portfolio:</strong> <a href="https://erniediaz11.github.io/" target="_blank" rel="noopener">erniediaz11.github.io</a></p>
+        <div class="hero-actions">
+          <a class="link-button primary" href="mailto:erniediaz11@gmail.com">Start an email</a>
+          <a class="link-button" href="https://github.com/erniediaz11" target="_blank" rel="noopener">View GitHub</a>
+        </div>
       </div>
       <div class="card">
         <h3>Best fit</h3>
-        <p>Grants, contracts, compliance, research administration, proposal support, public-sector operations, emergency management, dashboards, trackers, and consulting work.</p>
+        <p>Grants, contracts, compliance, research administration, proposal support, public-sector operations, emergency management, dashboards, trackers, and consulting work. Especially teams that need someone who can organize the work and still understand the mission.</p>
       </div>
     </div>
   </section>
@@ -1066,7 +1210,7 @@
     </div>
     <div class="start-right">
       <div class="start-profile">
-        <div class="avatar">🐒</div>
+        <div class="avatar">ED</div>
         <div>
           <div class="start-name">Ernesto Diaz</div>
           <div class="start-sub">System Builder</div>
@@ -1209,6 +1353,9 @@
         icon.addEventListener('click', e => {
           document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
           icon.classList.add('selected');
+          if (window.matchMedia('(pointer: coarse)').matches) {
+            openWindow(icon.dataset.window);
+          }
         });
       });
 
